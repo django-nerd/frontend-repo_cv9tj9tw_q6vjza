@@ -11,43 +11,31 @@ function Test() {
 
   const checkBackendConnection = async () => {
     try {
-      // Get backend URL from environment variable
       const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
       setBackendUrl(baseUrl)
 
-      // Test basic backend connectivity
       const response = await fetch(`${baseUrl}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       })
 
       if (response.ok) {
         const data = await response.json()
-        setBackendStatus(`✅ Connected - ${data.message || 'OK'}`)
-        
-        // Now test database connectivity
+        setBackendStatus(`Connected - ${data.message || 'OK'}`)
         await checkDatabaseConnection(baseUrl)
       } else {
-        setBackendStatus(`❌ Failed - ${response.status} ${response.statusText}`)
+        setBackendStatus(`Failed - ${response.status} ${response.statusText}`)
         setDatabaseStatus({ error: 'Backend not accessible' })
       }
     } catch (error) {
-      setBackendStatus(`❌ Error - ${error.message}`)
+      setBackendStatus(`Error - ${error.message}`)
       setDatabaseStatus({ error: 'Backend not accessible' })
     }
   }
 
   const checkDatabaseConnection = async (baseUrl) => {
     try {
-      const response = await fetch(`${baseUrl}/test`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
+      const response = await fetch(`${baseUrl}/test`, { headers: { 'Content-Type': 'application/json' } })
       if (response.ok) {
         const dbData = await response.json()
         setDatabaseStatus(dbData)
@@ -60,64 +48,56 @@ function Test() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center p-8">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-          Backend & Database Test
-        </h1>
+    <div className="min-h-screen bg-white text-zinc-900">
+      <div className="mx-auto max-w-3xl px-6 py-16">
+        <div className="mb-8">
+          <h1 className="font-heading text-3xl tracking-tight">Backend & Database Test</h1>
+          <p className="mt-2 text-sm text-zinc-600">Quick connectivity diagnostics for the API and database.</p>
+        </div>
 
-        <div className="space-y-4">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Backend URL:</h3>
-            <p className="text-sm text-gray-600 break-all bg-gray-100 p-2 rounded">
-              {backendUrl || 'Detecting...'}
-            </p>
+        <div className="grid gap-6">
+          <div className="rounded-md border border-zinc-200 p-5">
+            <h3 className="text-sm font-medium text-zinc-700">Backend URL</h3>
+            <p className="mt-1 text-sm text-zinc-600 break-all">{backendUrl || 'Detecting...'}</p>
           </div>
 
-          <div>
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Backend Status:</h3>
-            <p className="text-sm font-mono bg-gray-100 p-2 rounded">
-              {backendStatus}
-            </p>
+          <div className="rounded-md border border-zinc-200 p-5">
+            <h3 className="text-sm font-medium text-zinc-700">Backend Status</h3>
+            <p className="mt-1 text-sm font-mono">{backendStatus}</p>
           </div>
 
-          <div>
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Database Status:</h3>
-            <div className="text-sm bg-gray-100 p-3 rounded">
+          <div className="rounded-md border border-zinc-200 p-5">
+            <h3 className="text-sm font-medium text-zinc-700">Database Status</h3>
+            <div className="mt-1 text-sm">
               {databaseStatus ? (
                 databaseStatus.error ? (
                   <p className="text-red-600 font-mono">{databaseStatus.error}</p>
                 ) : (
-                  <div className="space-y-2">
-                    <p><span className="font-semibold">Backend:</span> {databaseStatus.backend}</p>
-                    <p><span className="font-semibold">Database:</span> {databaseStatus.database}</p>
-                    <p><span className="font-semibold">DB URL:</span> {databaseStatus.database_url}</p>
-                    <p><span className="font-semibold">DB Name:</span> {databaseStatus.database_name}</p>
-                    <p><span className="font-semibold">Connection:</span> {databaseStatus.connection_status}</p>
+                  <div className="space-y-1">
+                    <p><span className="font-medium">Backend:</span> {databaseStatus.backend}</p>
+                    <p><span className="font-medium">Database:</span> {databaseStatus.database}</p>
+                    <p><span className="font-medium">DB URL:</span> {databaseStatus.database_url}</p>
+                    <p><span className="font-medium">DB Name:</span> {databaseStatus.database_name}</p>
+                    <p><span className="font-medium">Connection:</span> {databaseStatus.connection_status}</p>
                     {databaseStatus.collections && databaseStatus.collections.length > 0 && (
-                      <p><span className="font-semibold">Collections:</span> {databaseStatus.collections.join(', ')}</p>
+                      <p><span className="font-medium">Collections:</span> {databaseStatus.collections.join(', ')}</p>
                     )}
                   </div>
                 )
               ) : (
-                <p className="text-gray-500 font-mono">Checking database...</p>
+                <p className="text-zinc-500 font-mono">Checking database...</p>
               )}
             </div>
           </div>
 
-          <button
-            onClick={checkBackendConnection}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition-colors"
-          >
-            Test Again
-          </button>
-
-          <a
-            href="/"
-            className="block w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded text-center transition-colors"
-          >
-            Back to Home
-          </a>
+          <div className="flex items-center gap-3">
+            <button onClick={checkBackendConnection} className="inline-flex items-center h-10 px-4 rounded-md bg-accent text-white hover:opacity-90 transition-opacity">
+              Test Again
+            </button>
+            <a href="/" className="inline-flex items-center h-10 px-4 rounded-md border border-zinc-300 hover:bg-zinc-50 transition-colors">
+              Back to Home
+            </a>
+          </div>
         </div>
       </div>
     </div>
